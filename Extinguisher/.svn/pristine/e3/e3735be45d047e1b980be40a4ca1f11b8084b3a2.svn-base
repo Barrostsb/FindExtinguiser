@@ -1,0 +1,107 @@
+package dao;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+/**
+ * Classe para consultas SQL
+ * @author Thiago Henrique Poiani
+ * @author Thiago Silva Barros
+ * @version 2.06
+ */
+public class Query extends Mysql {
+	private PreparedStatement statement;
+
+	/**
+	 * Construtor da classe Query, que instancia a classe Mysql
+	 * @throws SQLException
+	 */
+	public Query() throws SQLException  {
+		super();
+	}
+
+	/**
+	 * Método para verificar e armazenar consulta SQL
+	 * @param query Consulta SQL
+	 * @return boolean 
+	 */
+	public boolean storage(String query){
+		if (this.connection != null && query != null && !query.isEmpty()) {
+			try {
+				this.statement = this.connection.prepareStatement(query);
+			} catch (SQLException e) {
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Método para retornar dados da última consulta SQL feita
+	 * posicionando no primeiro resultado
+	 * @return ResultSet 
+	 */
+	public ResultSet execute() {
+		if (this.statement != null) {
+			ResultSet result = null;
+			try {
+				result = this.statement.executeQuery();
+				result.next();
+			} catch (SQLException e) {
+				return null;
+			}
+			return result;
+		}
+		return null;
+	}
+
+	/**
+	 * Método para retornar dados da consulta SQL
+	 * posicionando no primeiro resultado 
+	 * @param query Consulta SQL
+	 * @return ResultSet
+	 */
+	public ResultSet execute(String query) {
+		ResultSet result = null;
+
+		if (this.connection != null && query != null && !query.isEmpty()) {
+			try {
+				PreparedStatement statement = this.connection.prepareStatement(query);
+				result = statement.executeQuery();
+				result.next();
+			} catch (SQLException e) {
+				return null;
+			}
+			return result;
+		}
+		return null;
+	}
+
+	/**
+	 * Método para retornar nome das tabelas afetadas
+	 * @param result ResultSet
+	 * @return nome da tabela
+	 */
+	public String getTable(ResultSet result) {
+		try {
+			return result.getMetaData().getTableName(1);
+		} catch (SQLException e) {
+			return null;
+		}
+	}
+
+	/**
+	 * Método para retornar nome da coluna afetada
+	 * @param result ResultSet
+	 * @return nome da coluna
+	 */
+	public String getColumn(ResultSet result, int i) {
+		try {
+			return result.getMetaData().getTableName(i);
+		} catch (SQLException e) {
+			return null;
+		}
+	}
+}

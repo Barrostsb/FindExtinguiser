@@ -1,0 +1,288 @@
+package dao;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Vector;
+import java.util.Map.Entry;
+
+import model.Model;
+
+/**
+ * Classe para Data Access Object
+ * @author Thiago Henrique Poiani
+ * @author Thiago Silva Barros
+ */
+abstract class DAO extends Mysql {
+	protected PreparedStatement statement;
+	protected Model model;
+	
+	protected final String COMMA = ", ";
+	protected String columns = "";
+	protected String values = "";
+	
+	public abstract void save() throws SQLException; // método que encaminha para create ou update
+	public abstract Vector<Vector<String>> read() throws SQLException; // método para popular JTable
+	
+	/**
+	 * Construtor da classe DAO, que instancia a classe Mysql
+	 * @throws SQLException
+	 */
+	public DAO() throws SQLException  {
+		super();
+	}
+
+	/**
+	 * Método responsável por inserir informações no banco de dados
+	 * @param object
+	 * @throws SQLException
+	 */
+	public int create(Object object) throws SQLException {
+		model = new Model();
+		PreparedStatement statement = null;
+		
+		// array(key => value)
+		HashMap<Integer, String> array = new HashMap<Integer, String>();
+		
+		int i = 0;
+		String classe = object.getClass().toString().substring(12); // class model.Model => Model
+		// para cada atributo do model faça: 
+		for (Iterator<String> iterator = model.setters(classe).iterator(); 
+			 iterator.hasNext(); ) {
+			// armazena o atributo
+			String attribute = iterator.next();
+			if (!attribute.equals("id") && !attribute.equals("status")) {
+				// insere atributo no array(i => attribute)
+				array.put(i, attribute);
+				// concatena nas strings
+				columns += attribute + COMMA;
+				values += "?" + COMMA;
+				i++;
+			}
+		}
+		
+		// remove as duas outras letras das strings
+		columns = columns.substring(0, columns.length() - COMMA.length()); // id, nome, cpf
+		values = values.substring(0, values.length() - COMMA.length()); // ?, ?, ?
+		
+		String query = "INSERT INTO " + model.__get("table", object)
+				  	 + " (" + columns + ")"
+				  	 + " VALUES (" + values + ");";
+		
+		// atribui a query ao SQL
+		statement = this.connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+		
+		// para cada indice do array(key => value), iniciando em 1
+		for (Entry<Integer, String> index : array.entrySet()) {
+			// o atributo value retorna o método object.getValue()
+			statement.setString(index.getKey() + 1, model.__get(index.getValue(), object));
+		}
+
+		// executa query
+		statement.executeUpdate();
+		
+		// retorna id
+		ResultSet rs = statement.getGeneratedKeys();
+		rs.next();
+		return rs.getInt(1);
+	}
+	
+	/**
+	 * Método responsável por atualizar informações no banco de dados
+	 * @param object
+	 * @param id
+	 * @throws SQLException
+	 */
+	public void update(Object object) throws SQLException {
+		model = new Model();
+		PreparedStatement statement = null;
+		
+		String classe = object.getClass().toString().substring(12); // class model.Model => Model
+		// para cada atributo do model faça: 
+		// retira o auto commit do banco, praticamente prepara o begin transaction
+		beginTransaction();
+		
+		try {
+			for (Iterator<String> iterator = model.getters(classe).iterator(); 
+					iterator.hasNext();) {
+				// armazena o atributo
+				String attribute = iterator.next();
+				
+				if (!attribute.equals("id") && !attribute.equals("status")) {
+					// query
+					String query = "UPDATE " + model.__get("table", object) + " SET " + attribute + " = ? "
+							+ "WHERE " + model.__get("primaryKey", object) + " = ?; ";
+					
+					// atribui a query ao SQL
+					statement = this.connection.prepareStatement(query);
+					
+					// seta o atributo e a restrição
+					statement.setString(1, model.__get(attribute, object));
+					statement.setInt(2, Integer.parseInt(model.__get(model.__get("primaryKey", object), object)));
+					
+					// executa query
+					statement.executeUpdate();
+				}
+				
+				// commit e retorna ao estado de auto commit
+				commit();			
+			}
+		} catch (Exception e) {
+			rollback();
+		}
+	}
+	
+	/**
+	 * Método responsável por remover informações no banco de dados
+	 * @param object
+	 * @param id
+	 * @throws SQLException
+	 */
+	public void delete(Object object) throws SQLException {
+		model = new Model();
+		
+		// query
+		String query = "UPDATE " + model.__get("table", object) + " SET status = ? "
+				 	 + "WHERE " + model.__get("primaryKey", object) + " = ?; ";
+		
+		// atribui a query ao SQL
+		PreparedStatement statement = this.connection.prepareStatement(query);
+		
+		// seta status = 'i' e a restrição
+		statement.setString(1, "i");
+		statement.setInt(2, Integer.parseInt(model.__get(model.__get("primaryKey", object), object)));
+		
+		// executa a query
+		statement.executeUpdate();
+	}
+
+	/**
+	 * Método para verificar e armazenar consulta SQL
+	 * @param query Consulta SQL
+	 * @return boolean 
+	 */
+	public boolean storage(String query){
+		// verifica a conexão
+		if (this.connection != null && query != null && !query.isEmpty()) {
+			try {
+				// atribui a query ao SQL
+				this.statement = this.connection.prepareStatement(query);
+			} catch (SQLException e) {
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Método para retornar dados da última consulta SQL feita
+	 * SEM posicionar no primeiro resultado
+	 * @return ResultSet 
+	 */
+	public ResultSet execute() {
+		// verifica consulta
+		if (this.statement != null) {
+			ResultSet result = null;
+			try {
+				// executa consulta
+				result = this.statement.executeQuery();
+			} catch (SQLException e) {
+				return null;
+			}
+			return result;
+		}
+		return null;
+	}
+
+	/**
+	 * Método para retornar dados da consulta SQL
+	 * posicionando no primeiro resultado 
+	 * @param query Consulta SQL
+	 * @return ResultSet
+	 */
+	public ResultSet execute(String query) {
+		ResultSet result = null;
+
+		// verifica conexão
+		if (this.connection != null && query != null && !query.isEmpty()) {
+			try {
+				// atribui a query ao SQL
+				PreparedStatement statement = this.connection.prepareStatement(query);
+				
+				// executa a query
+				result = statement.executeQuery();
+				
+				// posiciona no primeiro resultado
+				result.next();
+			} catch (SQLException e) {
+				return null;
+			}
+			return result;
+		}
+		return null;
+	}
+	
+	/**
+	 * Método responsável por retornar um objeto de acordo com seu id
+	 * @param Model
+	 * @param id
+	 * @return Object
+	 */
+	public Object find(String Model, int id) {
+		model = new Model();
+		try {
+			// recebe o nome da classe
+			Class classe = Class.forName("model." + Model);
+			
+			// instancia a classe
+			Object object = classe.newInstance();
+			
+			// query
+			String query = "SELECT * FROM " + model.__get("table", object)
+						 + " WHERE " + model.__get("primaryKey", object) + " = " + id;
+			
+			// executa a query e recebe o único resultado
+			ResultSet result = execute(query);
+			
+			// para cada coluna do resultado
+			for (int i = 1; i <= result.getMetaData().getColumnCount(); i++) {
+				// seta no objeto os valores referentes aos atributos
+				model.__set(result.getMetaData().getColumnName(i), result.getString(i), object);
+			}
+			
+			return object;
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	/**
+	 * Inicia transação
+	 * @throws SQLException
+	 */
+	public void beginTransaction() throws SQLException {
+		this.connection.setAutoCommit(false);
+	}
+	
+	/**
+	 * Comitta
+	 * @throws SQLException
+	 */
+	public void commit() throws SQLException {
+		this.connection.commit();
+		this.connection.setAutoCommit(true);
+	}
+	
+	/**
+	 * Rollback
+	 * @throws SQLException
+	 */
+	public void rollback() throws SQLException {
+		this.connection.rollback();
+		this.connection.setAutoCommit(true);
+	}
+}

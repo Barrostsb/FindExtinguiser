@@ -1,0 +1,15 @@
+package pessoa;
+
+public class Auxiliar extends Pessoa{
+	public int codAuxiliar;
+	
+	public String toString(String n, int codigo){
+		
+		String ret;
+		ret = "Nome: "+n+"\n";
+		
+		ret +="Codigo: "+codigo+"\n";
+		
+		return ret;		
+	}
+}

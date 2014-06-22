@@ -1,0 +1,140 @@
+package model;
+
+public class Extintor extends Model {
+	private int id;
+	private String codigo;
+	private char tipo;
+	private int capacidade;
+	private String carga;
+	private char status;
+	private int id_usuario;
+	
+	/**
+	 * Cria objeto Extintor
+	 */
+	public Extintor() {
+		super.primaryKey = "id";
+		super.table = "extintor";
+	}
+	
+	/**
+	 * @return the id
+	 */
+	public int getId() {
+		return id;
+	}
+	
+	/**
+	 * @param id the id to set
+	 */
+	public void setId(int id) {
+		this.id = id;
+	}
+	
+	/**
+	 * @return the codigo
+	 */
+	public String getCodigo() {
+		return codigo;
+	}
+	
+	/**
+	 * @param codigo the codigo to set
+	 */
+	public void setCodigo(String codigo) {
+		this.codigo = codigo;
+	}
+	
+	/**
+	 * @return the tipo
+	 */
+	public char getTipo() {
+		return tipo;
+	}
+	
+	/**
+	 * @param tipo the tipo to set
+	 */
+	public void setTipo(char tipo) {
+		this.tipo = tipo;
+	}
+	
+	/**
+	 * @return the capacidade
+	 */
+	public int getCapacidade() {
+		return capacidade;
+	}
+	
+	/**
+	 * @param capacidade the capacidade to set
+	 */
+	public void setCapacidade(int capacidade) {
+		this.capacidade = capacidade;
+	}
+	
+	/**
+	 * @return the carga
+	 */
+	public String getCarga() {
+		return carga;
+	}
+	
+	/**
+	 * @param carga the carga to set
+	 */
+	public void setCarga(String carga) {
+		this.carga = carga;
+	}
+	
+	/**
+	 * @return the status
+	 */
+	public char getStatus() {
+		return status;
+	}
+	
+	/**
+	 * @param status the status to set
+	 */
+	public void setStatus(char status) {
+		this.status = status;
+	}
+	
+	/**
+	 * @return the id_usuario
+	 */
+	public int getId_usuario() {
+		return id_usuario;
+	}
+	
+	/**
+	 * @param id_usuario the id_usuario to set
+	 */
+	public void setId_usuario(int id_usuario) {
+		this.id_usuario = id_usuario;
+	}
+	
+	public void validate() throws Exception {
+		// validação de campo: codigo
+		if (this.codigo == null || this.codigo.isEmpty()) {
+			throw new Exception("Preencha o campo Código.");
+		}
+		
+			// validar UNIQUE
+		
+		if (this.codigo.length() > 8) {
+			throw new Exception("Tamanho de campo Código inválido.");
+		}
+
+		// validação de campo: capacidade
+		if (Integer.toString(this.capacidade).length() > 4) {
+			throw new Exception("Tamanho de campo Capacidade inválido.");
+		}
+		
+		// validação de campo: carga
+		if (this.carga.length() > 4) {
+			throw new Exception("Tamanho de campo Carga inválido.");
+		}
+	}
+}

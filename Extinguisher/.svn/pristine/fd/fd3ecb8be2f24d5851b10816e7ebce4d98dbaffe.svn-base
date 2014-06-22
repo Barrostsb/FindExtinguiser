@@ -1,0 +1,40 @@
+package extintor;
+import java.util.Scanner;
+
+public class ExtintorPQ extends Extintor implements InterExtintor{
+
+	public void salvarExtintor() {}
+
+	public void cadastrarExtintor() {
+		Scanner sc = new Scanner(System.in);
+		
+		System.out.println("Informe o código do extintor :  ");
+		codigo = sc.nextInt();
+		
+		System.out.println("Informe a capacidade do extintor :  ");
+		qtdAgente =sc.nextInt();
+		
+		System.out.println("Informe o mês da última recarga do extintor :  "); 
+		mesUltimaRecarga = sc.nextByte();
+		
+		System.out.println("Informe o ano da última recarga do extintor :  ");
+		anoUltimaRecarga = sc.nextShort();
+		
+		System.out.println("Informe o mês da última inspeção do extintor :  "); 
+		mesUltimaInspecao = sc.nextByte();
+		
+		System.out.println("Informe o ano da última inspeção do extintor :  ");
+		anoUltimaInspecao = sc.nextShort();
+		
+		mesProxRecarga = mesUltimaRecarga;
+		// padrão de 3 anos para o vencimento do extintor de Pó Químico!
+		anoProxRecarga = (short) (anoUltimaRecarga + 3); 
+		
+		mesProxTH = mesUltimaRecarga;
+		// padrão de 5 anos para o vencimento Teste Hidrostático!
+		anoProxTH = (short) (anoUltimaRecarga + 5);
+	}
+
+	// Implementar quando tiver conexao com o banco de dados
+	public void apagarExtintor(int codigo) {}
+}

@@ -1,0 +1,58 @@
+package extintor;
+import java.util.Scanner;
+
+/**
+ * Essa classe é responsável pelo gerenciamento
+ * de extintores de <i>água pressurizada</i>.
+ * @author Thiago Henrique Poiani
+ * @author Thiago Silva Barros
+ */
+
+public class ExtintorAP extends Extintor implements InterExtintor {
+
+	/**
+	 * Persistir extintor no banco de dados
+	 */
+	public void salvarExtintor() {}
+
+	/**
+	 * Cadastrar extintor de água pressurizada 
+	 */
+	public void cadastrarExtintor() {
+		Scanner sc = new Scanner(System.in);
+
+		System.out.println("Informe o código do extintor :  ");
+		codigo = sc.nextInt();
+
+		System.out.println("Informe a capacidade do extintor :  ");
+		qtdAgente =sc.nextInt();
+
+		System.out.println("Informe o mês da última recarga do extintor :  "); 
+		mesUltimaRecarga = sc.nextByte();
+
+		System.out.println("Informe o ano da última recarga do extintor :  ");
+		anoUltimaRecarga = sc.nextShort();
+
+		System.out.println("Informe o mês da última inspeção do extintor :  "); 
+		mesUltimaInspecao = sc.nextByte();
+
+		System.out.println("Informe o ano da última inspeção do extintor :  ");
+		anoUltimaInspecao = sc.nextShort();
+
+		mesProxRecarga = mesUltimaRecarga;
+		
+		//padrão de 2 anos para o vencimento do extintor de água!
+		anoProxRecarga = (short) (anoUltimaRecarga + 2); 
+
+		mesProxTH = mesUltimaRecarga;
+		
+		//padrão de 5 anos para o vencimento Teste Hidrostático!
+		anoProxTH = (short) (anoUltimaRecarga + 5); 
+	}
+
+	/**
+	 * Remover extintor no banco de dados
+	 */
+	public void apagarExtintor(int codigo) {}	
+
+}

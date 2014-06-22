@@ -1,0 +1,157 @@
+package model;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Model que possui métodos comuns
+ * @author Thiago Henrique Poiani
+ * @author Thiago Silva Barros
+ */
+public class Model {
+	protected String table;
+	protected String primaryKey;
+
+	/**
+	 * @return the table
+	 */
+	public String getTable() {
+		return this.table;
+	}
+
+	/**
+	 * @param table the table to set
+	 */
+	public void setTable(String table) {
+		this.table = table;
+	}
+
+	/**
+	 * @return the primaryKey
+	 */
+	public String getPrimaryKey() {
+		return this.primaryKey;
+	}
+
+	/**
+	 * @param primaryKey the primaryKey to set
+	 */
+	public void setPrimaryKey(String primaryKey) {
+		this.primaryKey = primaryKey;
+	}
+
+	/**
+	 * Método que retorna os getters da classe passada por parâmetro
+	 * @param Model
+	 * @return List<String>
+	 */
+	public List<String> getters(String Model) {
+		// Lista de strings
+		List<String> getters = new ArrayList<String>();
+
+		try {
+			// recebe o nome da classe
+			Class classe = Class.forName("model." + Model);
+
+			// para cada método declarado nessa classe 
+			for (Method method : classe.getDeclaredMethods()) {
+				// se o método iniciar com "get"
+				if (method.getName().startsWith("get")) {
+					// inserir na lista o nome do atributo à qual o método get representa 
+					String get = method.getName().substring(3);
+					getters.add(Character.toLowerCase(get.charAt(0)) + get.substring(1));
+				}
+			}
+			// retorna lista
+			return getters;
+
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	/**
+	 * Método que retorna os setters da classe passada por parâmetro
+	 * @param Model
+	 * @return List<String>
+	 */
+	public List<String> setters(String Model) {
+		List<String> setters = new ArrayList<String>();
+
+		try {
+			// recebe o nome da classe
+			Class classe = Class.forName("model." + Model);
+
+			// para cada método declarado nessa classe 
+			for (Method method : classe.getDeclaredMethods()) {
+				// se o método iniciar com "set"
+				if (method.getName().startsWith("set")) {
+					// inserir na lista o nome do atributo à qual o método set representa 
+					String set = method.getName().substring(3);
+					setters.add(Character.toLowerCase(set.charAt(0)) + set.substring(1));
+				}
+			}
+			// retorna lista
+			return setters;
+
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	/**
+	 * Método mágico para recuperar o valor de qulquer atributo de qualquer model
+	 * @param attribute
+	 * @param object
+	 * @return String
+	 */
+	public String __get(String attribute, Object object) {
+		try {
+			// recebe o nome da classe
+			Class classe = object.getClass();
+
+			// recupera o nome do método que referencia o atributo
+			String method = "get" + Character.toUpperCase(attribute.charAt(0)) + attribute.substring(1);
+
+			// retorna, em String, o retorno do método 
+			return String.valueOf(classe.getMethod(method, null).invoke(object, null));
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	/**
+	 * Método mágico para atribuir um valor para qulquer atributo de qualquer model
+	 * @param attribute
+	 * @param object
+	 */	
+	public void __set(String attribute, String arg, Object object) {
+		try {
+			// recebe o nome da classe
+			Class classe = object.getClass();		
+
+			// aponta para o atributo
+			Field field = classe.getDeclaredField(attribute);
+
+			// altera a visibilidade do atributo para public
+			field.setAccessible(true);
+
+			// seta valor ao atributo, convertendo se necessário
+			if (field.getType() == String.class) {
+				field.set(object, arg);
+			} else {
+				if (field.getType() == int.class || field.getType() == Integer.class) {
+					field.set(object, Integer.parseInt(arg));
+				} else {
+					if (field.getType() == char.class || field.getType() == Character.class) {
+						field.set(object, arg.charAt(0));		
+					}
+				}				
+			}
+		} catch (Exception e) {
+			return;
+		}
+	}
+}

@@ -1,0 +1,50 @@
+package dao;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+/**
+ * Classe de conexão com banco de dados MySQL
+ * @author Thiago Henrique Poiani
+ * @author Thiago Silva Barros
+ */
+public class Mysql {
+	private final String ADAPTER = "mysql";
+	private final String HOST = "findext.cxdsxdlfvih4.us-west-2.rds.amazonaws.com";
+	private final String PORT = "3306";
+	private final String DATABASE = "findext";
+	private final String USERNAME = "findext_dba";
+	private final String PASSWORD = "SOfLaDcAeDO";
+	protected Connection connection;
+
+	/**
+	 * Método construtor da classe Mysql
+	 * @throws SQLException
+	 */
+	public Mysql() throws SQLException {
+		this.connection = null;
+		open();
+	}
+
+	/**
+	 * Método para abrir conexão com banco de dados
+	 * @throws SQLException
+	 */
+	public void open() throws SQLException {
+		if (this.connection == null) {
+			String connection = "jdbc:" + this.ADAPTER + "://" + this.HOST + ":" + this.PORT + "/" + this.DATABASE;
+			this.connection = DriverManager.getConnection(connection,this.USERNAME,this.PASSWORD);
+		}
+	}
+
+	/**
+	 * Método para fechar conexão com banco de dados
+	 * @throws SQLException
+	 */
+	public void close() throws SQLException {
+		if (this.connection != null) {
+			this.connection.close();
+		}
+	}	
+}

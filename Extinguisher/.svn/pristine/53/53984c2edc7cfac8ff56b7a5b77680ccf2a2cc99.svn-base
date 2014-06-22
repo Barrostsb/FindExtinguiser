@@ -1,0 +1,89 @@
+package model;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+public class Mysql {
+
+	public static void main(String[] args) {
+		
+		Connection connection = null;
+		
+		// verifica driver
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+			return;
+		}
+	 
+		// conecta ao host com root, senha
+		try {
+			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/findext","root","root");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return;
+		}
+		
+		if (connection == null) {
+			return;
+		}
+		
+		// query
+		PreparedStatement query = null;
+		try {
+			query = connection.prepareStatement("SELECT * FROM usuario WHERE id = ?");
+			query.setString(1, "1");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		// execução de query
+		ResultSet result = null;
+        try {
+			result = query.executeQuery();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+        try {
+			System.out.println("Tabela: " + result.getMetaData().getTableName(1));
+			System.out.println("Coluna: " + result.getMetaData().getColumnName(1));
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+        
+        
+        try {
+        	if (result.next()) {
+            	System.out.println("Nome: " + result.getString("nome"));        		
+        	}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+        
+        Usuario usuario = new Usuario();
+        
+        // setNome
+        try {
+			usuario.setNome(result.getString("nome"));
+			System.out.println("Nome do Usuário: " + usuario.getNome());
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+         
+        // close
+        try {
+        	connection.close();
+        } catch (Exception e) {
+        	e.printStackTrace();
+        	return;
+        }
+        
+        // http://www.vogella.com/articles/MySQLJava/article.html
+	}
+}

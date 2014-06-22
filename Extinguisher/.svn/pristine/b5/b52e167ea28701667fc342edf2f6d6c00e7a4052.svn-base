@@ -1,0 +1,146 @@
+package dao;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map.Entry;
+
+import model.Usuario;
+
+
+public class UsuarioDAO extends DAO {
+
+	Usuario usuario;
+	public UsuarioDAO(Usuario usuario) throws SQLException {
+		super();
+		this.usuario = usuario;
+	}
+
+	/**
+	 * Método para autenticação de usuário
+	 * @return boolean
+	 */
+	public boolean auth() {		
+		ResultSet result = null;
+
+		String query = "SELECT * FROM " + this.usuario.getTable()
+					 + " WHERE usuario = ? AND senha = ? AND status = ?;";
+
+		if (this.connection != null && query != null && !query.isEmpty()) {
+			try {
+				PreparedStatement statement = this.connection.prepareStatement(query);
+				statement.setString(1, this.usuario.getUsuario());
+				statement.setString(2, this.usuario.getSenha());
+				statement.setString(3, String.valueOf('a'));
+				result = statement.executeQuery();
+
+				// se existir resultado, retorna true
+				return result.next() ? true : false;
+			} catch (SQLException e) {
+				return false;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Método para salvar usário, podendo atualizar ou cadastrar
+	 */
+	public void save() throws SQLException {
+		if (this.connection != null) {
+			if (usuario.getId() == 0) {
+				insert();
+			} else {
+				update(usuario.getId());
+			}
+		}
+	}
+
+	/**
+	 * Método para cadastrar
+	 */
+	public void insert() throws SQLException {
+		PreparedStatement statement = null;
+		String columns = "", values = "", COMMA = ", ";
+
+		HashMap<Integer, String> array = new HashMap<Integer, String>();
+		
+		int i = 0;
+		for (Iterator<String> iterator = this.usuario.setters(Usuario.class).iterator(); iterator.hasNext(); i++) {
+			String attribute = iterator.next();
+			if (!attribute.equals("id") && !attribute.equals("status")) {
+				array.put(i, attribute);
+				columns += attribute + COMMA;
+				values += "?" + COMMA;
+			}
+		}
+		
+		columns = columns.substring(0, columns.length() - COMMA.length());
+		values = values.substring(0, values.length() - COMMA.length());
+				
+		String query = "INSERT INTO " + this.usuario.getTable()
+				  	 + " (" + columns + ")"
+				  	 + " VALUES (" + values + ");";
+		
+		statement = this.connection.prepareStatement(query);
+
+		for (Entry<Integer, String> index : array.entrySet()) {
+			switch (index.getValue()) {
+				case "cpf": statement.setString(index.getKey(), this.usuario.getCpf()); break;
+				case "email": statement.setString(index.getKey(), this.usuario.getEmail()); break;
+				case "nome": statement.setString(index.getKey(), this.usuario.getNome()); break;
+				case "senha": statement.setString(index.getKey(), this.usuario.getSenha()); break;
+				case "tipo": statement.setString(index.getKey(), String.valueOf(this.usuario.getTipo())); break;
+				case "usuario": statement.setString(index.getKey(), this.usuario.getUsuario()); break;
+			}
+		}
+		
+		statement.executeUpdate();
+	}
+
+	/**
+	 * Método para atualizar
+	 */
+	@Override
+	public void update(int id) throws SQLException {
+		PreparedStatement statement = null;
+		
+		for (Iterator<String> iterator = this.usuario.getters(Usuario.class).iterator(); iterator.hasNext();) {
+			String attribute = iterator.next();
+			if (!attribute.equals("id") && !attribute.equals("status")) {
+				String query = "UPDATE " + this.usuario.getTable() + " SET " + attribute + " = ? "
+							 + "WHERE " + this.usuario.getPrimaryKey() + " = ?; ";
+
+				statement = this.connection.prepareStatement(query);
+				
+				switch (attribute) {
+					case "cpf": statement.setString(1, this.usuario.getCpf()); break;
+					case "email": statement.setString(1, this.usuario.getEmail()); break;
+					case "nome": statement.setString(1, this.usuario.getNome()); break;
+					case "senha": statement.setString(1, this.usuario.getSenha()); break;
+					case "tipo": statement.setString(1, String.valueOf(this.usuario.getTipo())); break;
+					case "usuario": statement.setString(1, this.usuario.getUsuario()); break;
+				}
+				statement.setInt(2, id);
+
+				statement.executeUpdate();
+			}
+		}
+	}
+
+	@Override
+	public void delete(int id) throws SQLException {
+		String query = "UPDATE " + this.usuario.getTable() + " SET status = ? "
+				 	 + "WHERE " + this.usuario.getPrimaryKey() + " = ?; ";
+		
+		PreparedStatement statement = this.connection.prepareStatement(query);
+		
+		statement.setString(1, "i");
+		statement.setInt(2, id);
+		
+		statement.executeUpdate();
+	}	
+	
+}

@@ -1,0 +1,25 @@
+package inspecaoRecarga;
+import data.Data;
+import extintor.Extintor;
+import local.Local;
+
+public class Inspecao {
+	public Data dataInspecao;
+	public Extintor codExtintor;
+	public Local localInsp;
+	
+	public Inspecao(Data dataInspecao, int cod, String setor, String subsetor){
+		this.dataInspecao = dataInspecao;
+		codExtintor = new Extintor(cod); //por delegacao "codExtintor" chama o construtor da classe Extintor 
+		localInsp = new Local(setor, subsetor); //por delegacao "localInsp" chama o construtor da classe Local 
+	}
+	
+	public String toString(){
+		String ret;
+		ret = "Extintor Inspecionado: \n"+codExtintor+"\n";//por delegaçao é chamada "to string" da classe Extintor
+		ret += "Data da Inspeção \n"+dataInspecao+"\n"; //por delegaçao é chamada "to string" da classe Data
+		ret += "Local da Inspeção \n"+localInsp; //por delegaçao é chamada "to string" da classe Local
+		
+		return ret;
+	}
+}

@@ -1,0 +1,48 @@
+package local;
+
+import java.util.Scanner;
+
+public class Local{ 
+	private String nomeSubsetor;
+	private String nomeSetor;
+	
+	public String getNomeSubsetor() {
+	    return nomeSubsetor;
+	}
+
+	public void setNomeSubsetor(String nomeSubsetor) {
+	    this.nomeSubsetor = nomeSubsetor;
+	}
+
+	public String getNomeSetor() {
+	    return nomeSetor;
+	}
+
+	public void setNomeSetor(String nomeSetor) {
+	    this.nomeSetor = nomeSetor;
+	}
+
+	public Local(){
+		
+	}
+	
+	public Local(String setor, String subsetor){
+		nomeSetor = setor;
+		nomeSubsetor = subsetor;
+	}
+	
+	public void cadastrarSetorSubsetor(){
+		Scanner sc = new Scanner(System.in);
+		
+		System.out.println("Informe o Setor:  ");
+		nomeSetor = sc.next();
+		
+		System.out.println("Informe o Subsetor:  ");
+		nomeSubsetor = sc.next();
+	}
+	
+	public String toString(){
+	    return "Setor: " + nomeSetor + "\nSubsetor: " + nomeSubsetor + "\n";
+	}
+
+}

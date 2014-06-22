@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<extintor>
+	<info>
+		<codigo>1000</codigo>
+		<tipo>Espuma Mecânica</tipo>
+		<capacidade>10 kg</capacidade>
+	</info>
+	<manutencao>
+		<data>2010-02-29</data>
+		<tipo>Manutenção</tipo>
+		<local>Pirassununga</local>
+	</manutencao>
+	<manutencao>
+		<data>2010-02-29</data>
+		<tipo>Manutenção</tipo>
+		<local>Pirassununga</local>
+	</manutencao>
+</extintor>

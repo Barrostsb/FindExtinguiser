@@ -1,0 +1,26 @@
+package extintor;
+
+/**
+ * Contem classes obrigatórias aos extintores 
+ * que poderão implementar essa interface.
+ * @author Thiago Henrique Poiani
+ * @author Thiago Silva Barros
+ */
+public interface InterExtintor {
+	
+	/**
+	 * Persistir extintor no banco de dados
+	 */
+	void salvarExtintor();
+	
+	/**
+	 * Cadastrar extintor 
+	 */
+	public void cadastrarExtintor();
+	
+	/**
+	 * Remover extintor no banco de dados
+	 */
+	public void apagarExtintor(int codigo);
+	
+}

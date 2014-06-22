@@ -1,0 +1,238 @@
+package model;
+
+import java.sql.ResultSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import DAO.UsuarioDAO;
+
+
+
+/**
+ * @author Thiago Henrique Poiani
+ * @author Thiago Silva Barros
+ */
+public class Usuario extends Model {
+
+	protected int id;
+	protected String cpf;
+	protected String usuario;
+	protected String senha;
+	protected String nome;
+	protected String email;
+	protected char tipo;
+	protected char status;
+
+	/**
+	 * Cria objeto Usuario
+	 */
+	public Usuario() {
+		super.primaryKey = "id";
+		super.table = "usuario";
+	}
+
+	/**
+	 * @return the id
+	 */
+	public int getId() {
+		return id;
+	}
+
+	/**
+	 * @param id the id to set
+	 */
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	/**
+	 * @return the cpf
+	 */
+	public String getCpf() {
+		return cpf;
+	}
+
+	/**
+	 * @param cpf the cpf to set
+	 */
+	public void setCpf(String cpf) {
+		this.cpf = cpf;
+	}
+
+	/**
+	 * @return the usuario
+	 */
+	public String getUsuario() {
+		return usuario;
+	}
+
+	/**
+	 * @param usuario the usuario to set
+	 */
+	public void setUsuario(String usuario) {
+		this.usuario = usuario;
+	}
+
+	/**
+	 * @return the senha
+	 */
+	public String getSenha() {
+		return senha;
+	}
+
+	/**
+	 * @param senha the senha to set
+	 */
+	public void setSenha(String senha) {
+		this.senha = senha;
+	}
+
+	/**
+	 * @return the nome
+	 */
+	public String getNome() {
+		return nome;
+	}
+
+	/**
+	 * @param nome the nome to set
+	 */
+	public void setNome(String nome) {
+		this.nome = nome;
+	}
+
+	/**
+	 * @return the email
+	 */
+	public String getEmail() {
+		return email;
+	}
+
+	/**
+	 * @param email the email to set
+	 */
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	/**
+	 * @return the status
+	 */
+	public char getStatus() {
+		return status;
+	}
+
+	/**
+	 * @param status the status to set
+	 */
+	public void setStatus(char status) {
+		this.status = status;
+	}
+
+	/**
+	 * @return the tipo
+	 */
+	public char getTipo() {
+		return tipo;
+	}
+
+	/**
+	 * @param tipo the tipo to set
+	 */
+	public void setTipo(char tipo) {
+		this.tipo = tipo;
+	}
+
+	/**
+	 * Método para validação do model
+	 * @throws Exception
+	 */
+	public void validate() throws Exception {
+		UsuarioDAO business = new UsuarioDAO(this);
+		ResultSet result = null;
+		Pattern pattern = null;
+		Matcher matcher = null;
+		String query = "";
+
+		// validação de campo: nome
+		if (this.nome == null || this.nome.isEmpty()) {
+			throw new Exception("O campo Nome não pode ser vazio.");
+		}
+
+		if (this.nome.length() > 60) {
+			throw new Exception("Tamanho de campo Nome inválido.");
+		}
+
+		// validação de campo: cpf
+		if (this.cpf == null || this.cpf.isEmpty()) {
+			throw new Exception("O campo CPF não pode ser vazio.");
+		}
+
+		if (this.cpf.length() > 14) {
+			throw new Exception("Tamanho de campo CPF inválido.");
+		}
+
+		// regex para validar formatação de CPF
+		pattern = Pattern.compile("\\d{3}\\.\\d{3}\\.\\d{3}\\-\\d{2}");
+		matcher = pattern.matcher(this.cpf);
+		if (!matcher.find()) {
+			throw new Exception("Preencha o campo CPF com um formato válido.");	
+		}
+
+		// query para verificar cpf unique
+		query = (this.id == 0) ? "SELECT * FROM " + getTable() + " WHERE cpf = '" + this.cpf + "'": 
+			"SELECT * FROM " + getTable() + " WHERE cpf = '" + this.cpf + "' AND id <> " + this.id;
+
+		// armazena e executa a query
+		business.storage(query);
+		result = business.execute();
+
+		// se existir resultado, lança excessão
+		if (result.next()){
+			throw new Exception("Esse CPF já está cadastrado no sistema.");
+		}
+
+		// validação de campo: email
+		if (this.email == null || this.email.isEmpty()) {
+			throw new Exception("O campo E-mail não pode ser vazio.");
+		}
+
+		if (this.email.length() > 60) {
+			throw new Exception("Tamanho de campo E-mail inválido.");
+		}
+
+		// regex para validar formatação de email
+		pattern = Pattern.compile("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
+		matcher = pattern.matcher(this.email);
+		if (!matcher.find()) {
+			throw new Exception("Preencha o campo E-mail com um formato válido.");	
+		}
+
+		// validação de campo: usuario
+		if (this.usuario == null || this.usuario.isEmpty()) {
+			throw new Exception("O campo Usuário não pode ser vazio.");
+		}
+
+		if (this.usuario.length() > 16) {
+			throw new Exception("Tamanho de campo Usuário inválido.");
+		}
+
+		// query para verificar usuario unique
+		query = (this.id == 0) ? "SELECT * FROM " + getTable() + " WHERE usuario = '" + this.cpf + "'": 
+			"SELECT * FROM " + getTable() + " WHERE usuario = '" + this.cpf + "' AND id <> " + this.id;
+
+		// armazena e executa a query
+		business.storage(query);
+		result = business.execute();
+
+		// se existir resultado, lança excessão
+		if (result.next()){
+			throw new Exception("Esse Usuário já está cadastrado no sistema.");
+		}
+
+		// validação de campo: senha
+		if (this.senha == null || this.senha.isEmpty()) {
+			throw new Exception("O campo Senha não pode ser vazio");
+		}
+	}
+}

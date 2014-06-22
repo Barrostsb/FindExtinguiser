@@ -1,0 +1,169 @@
+package model;
+
+import model.Model;
+
+public class Usuario extends Model {
+	
+	protected int id;
+	protected String cpf;
+	protected String usuario;
+	protected String senha;
+	protected String nome;
+	protected String email;
+	protected char status;
+	
+	/**
+	 * Cria objeto Usuario
+	 */
+	public Usuario() {
+		super.primary_key = "id";
+		super.tabela = "usuario";
+	}
+	
+	/**
+	 * @return the id
+	 */
+	public int getId() {
+		return id;
+	}
+	
+	/**
+	 * @param id the id to set
+	 */
+	public void setId(int id) {
+		this.id = id;
+	}
+	
+	/**
+	 * @return the cpf
+	 */
+	public String getCpf() {
+		return cpf;
+	}
+	
+	/**
+	 * @param cpf the cpf to set
+	 */
+	public void setCpf(String cpf) {
+		this.cpf = cpf;
+	}
+	
+	/**
+	 * @return the usuario
+	 */
+	public String getUsuario() {
+		return usuario;
+	}
+	
+	/**
+	 * @param usuario the usuario to set
+	 */
+	public void setUsuario(String usuario) {
+		this.usuario = usuario;
+	}
+	
+	/**
+	 * @return the senha
+	 */
+	public String getSenha() {
+		return senha;
+	}
+	
+	/**
+	 * @param senha the senha to set
+	 */
+	public void setSenha(String senha) {
+		this.senha = senha;
+	}
+	
+	/**
+	 * @return the nome
+	 */
+	public String getNome() {
+		return nome;
+	}
+	
+	/**
+	 * @param nome the nome to set
+	 */
+	public void setNome(String nome) {
+		this.nome = nome;
+	}
+	
+	/**
+	 * @return the email
+	 */
+	public String getEmail() {
+		return email;
+	}
+	
+	/**
+	 * @param email the email to set
+	 */
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	
+	/**
+	 * @return the status
+	 */
+	public char getStatus() {
+		return status;
+	}
+	
+	/**
+	 * @param status the status to set
+	 */
+	public void setStatus(char status) {
+		this.status = status;
+	}
+	
+	public void validate() throws Exception {	
+		// validação de campo: cpf
+		if (this.cpf == null || this.cpf.isEmpty()) {
+			throw new Exception("Preencha o campo CPF.");
+		}
+		
+			// validar UNIQUE
+		
+		if (this.cpf.length() > 14) {
+			throw new Exception("Tamanho de campo CPF inválido.");
+		}
+		
+		// validação de campo: usuario
+		if (this.usuario == null || this.usuario.isEmpty()) {
+			throw new Exception("Preencha o campo Usuário.");
+		}
+		
+			// validar UNIQUE
+		
+		if (this.usuario.length() > 16) {
+			throw new Exception("Tamanho de campo Usuário inválido.");
+		}
+
+		// validação de campo: senha
+		if (this.senha == null || this.senha.isEmpty()) {
+			throw new Exception("Preencha o campo Senha.");
+		}
+		
+		// validação de campo: nome
+		if (this.nome == null || this.nome.isEmpty()) {
+			throw new Exception("Preencha o campo Nome.");
+		}
+		
+		if (this.nome.length() > 60) {
+			throw new Exception("Tamanho de campo Nome inválido.");
+		}
+		
+		// validação de campo: nome
+		if (this.email == null || this.email.isEmpty()) {
+			throw new Exception("Preencha o campo Email.");
+		}
+		
+			// VALIDAR EMAIL
+		
+		if (this.email.length() > 60) {
+			throw new Exception("Tamanho de campo Email inválido.");
+		}
+	}
+}

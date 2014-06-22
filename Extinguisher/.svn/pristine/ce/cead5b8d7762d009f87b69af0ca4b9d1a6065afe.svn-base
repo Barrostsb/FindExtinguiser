@@ -1,0 +1,154 @@
+package GUI;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.sql.SQLException;
+
+import dao.UsuarioDAO;
+
+import model.Usuario;
+
+public class frmLogin extends javax.swing.JFrame {
+	private javax.swing.JLabel jLabel1;
+	private javax.swing.JLabel jLabel2;
+	private javax.swing.JPasswordField txtPasswd;
+	private javax.swing.JTextField txtUser;
+	private javax.swing.JLabel lblPrincipal;
+	private javax.swing.JButton btnEnter;
+    private javax.swing.JButton btnLimpar;
+
+    public frmLogin() {
+        initComponents();
+    }
+
+    private void initComponents() {
+    	lblPrincipal = new javax.swing.JLabel();
+    	jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        txtUser = new javax.swing.JTextField();
+        txtPasswd = new javax.swing.JPasswordField();
+        btnEnter = new javax.swing.JButton();
+        btnLimpar = new javax.swing.JButton();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jLabel1.setText("Usuário");
+        jLabel2.setText("Senha");
+        btnEnter.setText("Entrar");
+        btnLimpar.setText("Limpar");
+        
+        lblPrincipal.setText("FindExt 07.2013");
+        lblPrincipal.setFont(new java.awt.Font("Tempus Sans ITC", 3, 18)); // NOI18N
+        lblPrincipal.setForeground(new java.awt.Color(224, 11, 11));
+        lblPrincipal.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap(64, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(btnLimpar)
+                        .addGap(72, 72, 72)
+                        .addComponent(btnEnter)
+                        .addGap(85, 85, 85))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel2))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(lblPrincipal)
+                            .addComponent(txtUser)
+                            .addComponent(txtPasswd, javax.swing.GroupLayout.DEFAULT_SIZE, 224, Short.MAX_VALUE))
+                        .addGap(27, 27, 27))))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(29, 29, 29)
+                .addComponent(lblPrincipal)
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(txtUser, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(25, 25, 25)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(txtPasswd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 21, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnEnter)
+                    .addComponent(btnLimpar))
+                .addGap(41, 41, 41))
+        );
+
+        pack();
+        
+        btnEnter.addActionListener(new btnEnterHandler());
+        btnLimpar.addActionListener(new btnLimparHandler());
+    }
+    
+    /**
+     * Controller btnEnterHandler responsável pela ação de autenticação
+     * @author Thiago Henrique Poiani
+     */
+    private class btnEnterHandler implements ActionListener {
+
+    	@Override
+		public void actionPerformed(ActionEvent arg0) {
+	    	Usuario usuario = new Usuario();
+
+	    	// conversão da senha para MD5
+	    	usuario.setUsuario(txtUser.getText());
+	    	usuario.setSenha(toMD5(new String(txtPasswd.getPassword())));
+
+	        try {
+				UsuarioDAO business = new UsuarioDAO(usuario);
+				if (business.auth()) {
+					frmPrincipal formPrincipal= new frmPrincipal();
+					formPrincipal.setVisible(true);
+					setVisible(false);
+				} else {
+					// RETORNAR DIALOG DE USUARIO E SENHA ERRADO
+				}
+			} catch (SQLException e) {
+				// RETORNAR DIALOG DE ERRO
+			}
+	    }
+    	
+    	/**
+    	 * Método para conversão de string em MD5
+    	 * @param senha textPasswd
+    	 * @return String MD5
+    	 */
+    	private String toMD5(String senha) {
+    		MessageDigest hash = null;
+			try {
+				hash = MessageDigest.getInstance("MD5");
+				hash.update(senha.getBytes(), 0, senha.length());
+			} catch (NoSuchAlgorithmException e) {
+				// RETORNAR DIALOG DE ERRO 
+			}
+    		return new BigInteger(1, hash.digest()).toString(16);
+    	}
+	}
+	
+    /**
+     * Controller btnLimparHandler responsável pela ação de autenticação
+	 * @author Thiago Henrique Poiani
+     */
+	private class btnLimparHandler implements ActionListener {
+		
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			txtUser.setText("");
+			txtPasswd.setText("");
+		}		
+	}
+}

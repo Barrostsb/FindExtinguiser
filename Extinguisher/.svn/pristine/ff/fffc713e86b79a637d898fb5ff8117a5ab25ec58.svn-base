@@ -1,0 +1,94 @@
+package dao;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import model.Usuario;
+
+
+public class UsuarioDAO extends DAO {
+
+	Usuario usuario;
+	public UsuarioDAO(Usuario usuario) throws SQLException {
+		super();
+		this.usuario = usuario;
+	}
+
+	/**
+	 * Método para autenticação de usuário
+	 * @return boolean
+	 */
+	public boolean auth() {		
+		ResultSet result = null;
+
+		String query = "SELECT * FROM " + this.usuario.getTabela()
+					 + " WHERE usuario = ? AND senha = ? AND status = 'a';";
+
+		if (this.connection != null && query != null && !query.isEmpty()) {
+			try {
+				PreparedStatement statement = this.connection.prepareStatement(query);
+				statement.setString(1, this.usuario.getUsuario());
+				statement.setString(2, this.usuario.getSenha());
+				result = statement.executeQuery();
+
+				// se existir resultado, retorna true
+				return result.next() ? true : false;
+			} catch (SQLException e) {
+				return false;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Método para salvar usário, podendo atualizar ou cadastrar
+	 */
+	public void save() throws SQLException {
+		if (this.connection != null) {
+			if (usuario.getId() == 0) {
+				insert();
+			} else {
+				update(usuario.getId());
+			}
+		}
+	}
+
+	/**
+	 * Método para cadastrar
+	 */
+	public void insert() throws SQLException {
+		String query = "INSERT INTO " + this.usuario.getTabela()
+				  	 + " (cpf, nome, email, tipo, usuario, senha, status)"
+				  	 + " VALUES (?, ?, ?, ?, ?, ?, ?)";
+		
+		PreparedStatement statement = this.connection.prepareStatement(query);
+		statement.setString(1, this.usuario.getCpf());
+		statement.setString(2, this.usuario.getNome());
+		statement.setString(3, this.usuario.getEmail());
+		//statement.setString(4, usuario.getTipo());
+		statement.setString(4, "a");
+		statement.setString(5, this.usuario.getUsuario());
+		statement.setString(6, this.usuario.getSenha());
+		statement.setString(7, String.valueOf(this.usuario.getStatus()));
+		
+		statement.executeUpdate();
+	}
+
+	/**
+	 * Método para atualizar
+	 */
+	@Override
+	public void update(int id) throws SQLException {
+		String query = "UPDATE " + this.usuario.getTabela() + " SET "
+					 + " cpf = ? WHERE id = ?";
+		
+	}
+
+	@Override
+	public void delete(int id) throws SQLException {
+		// TODO Auto-generated method stub
+		
+	}	
+	
+}

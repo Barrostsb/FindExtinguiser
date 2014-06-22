@@ -1,0 +1,70 @@
+package model;
+
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+
+public class Model {
+	protected String table;
+	protected String primaryKey;
+	
+	/**
+	 * @return the table
+	 */
+	public String getTable() {
+		return this.table;
+	}
+	
+	/**
+	 * @param table the table to set
+	 */
+	public void setTable(String table) {
+		this.table = table;
+	}
+	
+	/**
+	 * @return the primaryKey
+	 */
+	public String getPrimaryKey() {
+		return this.primaryKey;
+	}
+	
+	/**
+	 * @param primaryKey the primaryKey to set
+	 */
+	public void setPrimaryKey(String primaryKey) {
+		this.primaryKey = primaryKey;
+	}
+	
+	/**
+	 * Método que retorna os getters da classe passada por parâmetro
+	 * @param classe
+	 * @return List<String>
+	 */
+	public <T> List<String> getters(Class<T> classe) {
+		List<String> getters = new ArrayList<String>();
+		for (Method method : classe.getDeclaredMethods()) {
+			if (method.getName().startsWith("get")) {
+				String get = method.getName().substring(3);
+				getters.add(Character.toLowerCase(get.charAt(0)) + get.substring(1));
+			}
+		}
+		return getters;
+	}
+	
+	/**
+	 * Método que retorna os setters da classe passada por parâmetro
+	 * @param classe
+	 * @return List<String>
+	 */
+	public <T> List<String> setters(Class<T> classe) {
+		List<String> setters = new ArrayList<String>();
+		for (Method method : classe.getDeclaredMethods()) {
+			if (method.getName().startsWith("set")) {
+				String set = method.getName().substring(3);
+				setters.add(Character.toLowerCase(set.charAt(0)) + set.substring(1));
+			}
+		}
+		return setters;
+	}
+}

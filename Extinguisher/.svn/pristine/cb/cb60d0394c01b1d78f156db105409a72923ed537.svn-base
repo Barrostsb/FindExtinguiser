@@ -1,0 +1,19 @@
+package model;
+
+public class Auxiliar extends Usuario {
+	private char tipo; // Flag: 'a', 'e'
+	
+	/**
+	 * @return the tipo
+	 */
+	public char getTipo() {
+		return tipo;
+	}
+	
+	/**
+	 * @param tipo the tipo to set
+	 */
+	public void setTipo(char tipo) {
+		this.tipo = tipo;
+	}
+}

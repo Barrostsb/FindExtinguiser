@@ -1,0 +1,45 @@
+package data;
+
+public class Data {
+	public byte dia;
+	public byte mes;
+	public short ano;
+	
+	public Data(byte d,byte m,short a){
+		dia = d;
+		mes = m;
+		ano = a;		
+	}	
+	
+	public Data(){
+		
+	}	
+
+	public byte getDia(){
+		return dia;
+	}
+	
+	public byte getMes(){
+		return mes;
+	}
+	
+	public short getAno(){
+		return ano;
+	}
+	
+		
+	public boolean dataValida(byte d, byte m, short a){
+		if((d >= 1)	&& (d <= 31) && (m >= 1) && (m <= 12))
+			return true;
+		else
+			return false;
+	}
+	
+	public String toString(){
+		String ret;
+		
+		ret = dia+"/"+mes+"/"+ano+"\n";
+		
+		return ret;
+	}
+}

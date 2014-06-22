@@ -1,0 +1,56 @@
+package extintor;
+
+public class Extintor {
+	public int codigo;
+	public String tipo;
+	public int qtdAgente;
+	
+	public short anoUltimaRecarga;
+	public byte mesUltimaRecarga;
+	
+	public short anoUltimaInspecao;
+	public byte mesUltimaInspecao;
+	
+	public short anoProxTH;
+	public byte mesProxTH;
+	
+	public short anoProxRecarga;
+	public byte mesProxRecarga;
+	
+	
+	public Extintor(){
+		this(0);
+	}
+	
+	public Extintor(int cod){
+		codigo = cod;
+		tipo = "nenhum";
+		qtdAgente = 0;
+		
+		anoUltimaRecarga = 0;
+		mesUltimaRecarga = 0;
+		
+		anoUltimaInspecao = 0;
+		mesUltimaInspecao = 0;
+		
+		anoProxTH = 0;
+		mesProxTH = 0;
+		anoProxRecarga = 0;
+		mesProxRecarga = 0;
+	}
+	
+	//Dados serão puxados do Banco de dados, por enquanto esta sendo setado "0"
+	public String toString(){
+		String ret;
+		
+		ret = "Código do extintor: "+codigo+"\n";
+		ret += "Tipo do extintor: "+tipo+"\n";
+		ret += "Capacidade do extintor: "+qtdAgente+"\n";
+		ret += "Próximo teste Hidrostático do extintor: "+mesProxTH+"/"+anoProxTH+"\n";
+		ret += "Próxima recarga do extintor: "+mesProxRecarga+"/"+anoProxRecarga+"\n";
+		
+		return ret;
+	}
+	
+
+}
